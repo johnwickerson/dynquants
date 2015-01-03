@@ -1,0 +1,184 @@
+\documentclass[a4paper]{llncs}
+
+% Page size (with wide righthand margin, for todo notes)
+\usepackage[paperwidth=21cm, paperheight=22cm, textwidth=12.2cm,
+textheight=19.3cm]{geometry}
+\addtolength\hoffset{-3cm}
+\addtolength\marginparwidth{3cm}
+
+% Use Times font (it's more compact)
+%\renewcommand\rmdefault{ptm}
+
+% Define a version of \paragraph whose heading runs straight into the
+% text that follows.
+% {
+\makeatletter
+\usepackage{suffix}
+\renewcommand\paragraph[1]{%
+\@startsection{paragraph}{3}{\z@}%
+{-12\p@ \@plus -4\p@ \@minus -4\p@}%
+{-0.5em \@plus -0.22em \@minus -0.1em}%
+{\normalfont\normalsize\bfseries\boldmath}{#1}}
+\WithSuffix\newcommand\paragraph*[1]{%
+\@startsection{paragraph}{3}{\z@}%
+{-12\p@ \@plus -4\p@ \@minus -4\p@}%
+{0pt}%
+{\normalfont\normalsize\bfseries\boldmath}{#1} \hspace*{0pt}}
+\makeatother
+%}
+
+% Line numbers in margin
+\usepackage{lineno}
+\setpagewiselinenumbers
+\modulolinenumbers[5]
+
+% Reduce spacing above/below figures
+%\setlength\textfloatsep{10.0pt plus 2.0pt minus 4.0pt}
+%\setlength\floatsep{6.0pt plus 2.0pt minus 2.0pt}
+
+
+\usepackage{ifthen}
+\usepackage{array}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+
+
+% Inline lists
+\usepackage[inline]{enumitem}
+\newenvironment{inlineitemize}{
+\begin{itemize*}[label={},afterlabel={},before=\unskip]
+}{
+\end{itemize*}
+}
+
+% Remove spacing above/below lists
+%\setlist{noitemsep, topsep=0pt} 
+
+% Prettier tables
+\usepackage{booktabs}
+
+% Multiple footnotes per line
+\usepackage[para]{footmisc}
+
+%\usepackage[colorlinks=true,allcolors=blue,breaklinks,draft=false]{hyperref}
+
+\usepackage{amsmath}
+%\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage[usenames,dvipsnames]{xcolor}
+
+% Comments
+\usepackage{todonotes}
+\setcounter{tocdepth}{1} % Makes \listoftodos work with llncs
+\newcommand\JWComment[1]{\todo[backgroundcolor=blue!10,
+  linecolor=blue]{{\bf John:} #1}}
+
+% Code listings
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  basewidth=0.5em, % when using cmtt
+  columns=fixed,
+  mathescape=true,
+  numberstyle=\scriptsize,
+  escapechar=",
+  xleftmargin=5mm,
+  numbersep=3mm,
+}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix,fit,calc,positioning}
+\tikzset{event/.style={draw=none, inner sep=0.4mm}}
+
+% For adding borders/shading to blocks of text
+\usepackage{framed}
+\definecolor{shadecolor}{gray}{0.9}
+
+% For highlighting text
+\usepackage{soul} 
+\definecolor{highlightingcolor}{HTML}{FFFF99}
+\sethlcolor{highlightingcolor}
+\newcommand\mhl[1]{\fboxsep=0pt\colorbox{highlightingcolor}{\strut$#1$}}
+
+\newcommand\stack[2][l]{{\renewcommand\arraystretch{1}\begin{array}[t]{@{}#1@{}}#2\end{array}}}
+
+\newcommand\var[1]{\mathit{#1}}
+\newcommand\code[1]{\mbox{\lstinline{#1}}}
+\newcommand\sem[1]{\llbracket #1 \rrbracket}
+\newcommand\roundsem[1]{\llparenthesis\hspace{0.1ex}#1\hspace{0.1ex}\rrparenthesis}
+\newcommand\semicolon{\mathbin{;}}
+
+\title{Dynamic quantifiers and proof graphs}
+\author{John Wickerson}
+\institute{Imperial College London}
+
+\begin{document}
+
+\maketitle
+
+%\linenumbers
+
+\pagestyle{plain}
+
+\begin{abstract} 
+To do.
+\end{abstract}
+
+\section{Introduction}
+
+Let us consider the following fragment of first-order logic:
+\begin{align*}
+P &::= f(\bar x) \mid P \wedge P \mid P \vee P \mid \exists x \ldotp P
+\end{align*}
+where $f$ ranges over a set $\mathbb F$ of function symbols and $x$
+ranges over a set $\mathbb X$ of variables. (Since it admits no
+negative formulae, our fragment is rather impoverished, but it is
+roughly as expressive as the language of `symbolic heaps' that is
+heavily used in the study of separation logic.) If $<$ is
+a 2-ary function symbol in $\mathbb F$, one formula in our
+language is:
+\begin{equation}
+(\exists z\ldotp \exists y\ldotp 0 < y \wedge y < z \wedge z < w)
+\wedge w < 4. \label{eq:formula1}
+\end{equation}
+
+We would like to normalise formulae in our language. (Normalisation is
+useful because two formulae sharing the same normal form can be deemed
+equivalent.) The standard way to do this involves pulling the
+quantifiers as far `outside' as possible (exploiting the identity
+$P\wedge (\exists x\ldotp Q) \equiv \exists x \ldotp P \wedge Q$ when
+$x$ is not free in $P$) and then introducing the quantifiers in a
+canonical order, say alphabetical (exploiting the identity $\exists y
+\ldotp \exists x\ldotp P \equiv \exists x\ldotp\exists y \ldotp
+P$). Applying this process to \eqref{eq:formula1} yields:
+\begin{equation}
+\exists y\ldotp \exists z\ldotp 0 < y \wedge y < z \wedge z < w
+\wedge w < 4. \label{eq:formula2}
+\end{equation}
+
+One disadvantage of pulling quantifiers to the `outside' of a formula
+is the lack of congruity. For instance, if $P \Rightarrow Q$, then
+even if $C[P]$, $P$ and $Q$ are all in normal form, $C[Q]$ need not be.
+
+
+
+
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{dynquants}
+
+%\pagebreak
+
+%\listoftodos
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
